@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 public class Usuario implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "usuario_seq", sequenceName = "usuario_seq", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usuario_seq")
     private Long id;
     private String name;
     private String email;
@@ -35,11 +36,8 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        roles.stream().map(role -> {
-            System.out.println("Role "+role);
-            return List.of(new SimpleGrantedAuthority("ROLE_".concat(role.getName())));
-        }).collect(Collectors.toList());
-        return null;
+       return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_".concat(role.getName())))
+                .collect(Collectors.toSet());
     }
 
     @Override
