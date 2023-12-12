@@ -1,5 +1,6 @@
 package com.samuelfer.security.user;
 
+import com.samuelfer.security.role.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -18,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "usuario")
-public class User implements UserDetails {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue
@@ -28,12 +30,16 @@ public class User implements UserDetails {
     private String password;
     private boolean status;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_".concat(role.name())));
+        roles.stream().map(role -> {
+            System.out.println("Role "+role);
+            return List.of(new SimpleGrantedAuthority("ROLE_".concat(role.getName())));
+        }).collect(Collectors.toList());
+        return null;
     }
 
     @Override

@@ -1,8 +1,7 @@
 package com.samuelfer.security.auth;
 
 import com.samuelfer.security.config.JwtService;
-import com.samuelfer.security.user.Role;
-import com.samuelfer.security.user.User;
+import com.samuelfer.security.user.Usuario;
 import com.samuelfer.security.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,12 +24,11 @@ public class AuthenticationService {
         if (userExists.isPresent()) {
             throw new RuntimeException("User already");
         }
-        var user = User.builder()
+        var user = Usuario.builder()
                         .name(request.getName())
                         .email(request.getEmail())
                         .password(passwordEncoder.encode(request.getPassword()))
                         .status(true)
-                        .role(Role.USER)
                         .build();
         repository.save(user);
 
